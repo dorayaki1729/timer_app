@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>タイマー&ストップウォッチ</title>
     <style>
+        /* --- 既存のスタイルそのまま --- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -22,17 +22,14 @@
             transition: background 0.5s ease;
             padding: 10px;
         }
-
         body.timer-finished {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
             animation: pulse-bg 2s infinite;
         }
-
         @keyframes pulse-bg {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.8; }
         }
-
         .container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -44,13 +41,11 @@
             width: 95%;
             margin: 0 auto;
         }
-
         h1 {
             font-size: clamp(1.5rem, 4vw, 2rem);
             margin-bottom: 20px;
             font-weight: 300;
         }
-
         .tabs {
             display: flex;
             margin-bottom: 20px;
@@ -59,7 +54,6 @@
             padding: 5px;
             gap: 5px;
         }
-
         .tab {
             flex: 1;
             padding: clamp(8px, 2vw, 12px);
@@ -72,12 +66,10 @@
             font-size: clamp(0.9rem, 2.5vw, 1rem);
             white-space: nowrap;
         }
-
         .tab.active {
             background: rgba(255, 255, 255, 0.2);
             transform: scale(1.05);
         }
-
         .display {
             font-size: clamp(2.5rem, 8vw, 4rem);
             font-weight: 300;
@@ -85,7 +77,6 @@
             font-family: 'Courier New', monospace;
             letter-spacing: 2px;
         }
-
         .controls {
             display: flex;
             gap: 15px;
@@ -93,7 +84,6 @@
             margin: 20px 0;
             flex-wrap: wrap;
         }
-
         .btn {
             padding: clamp(10px, 2vw, 15px) clamp(15px, 3vw, 25px);
             border: none;
@@ -103,33 +93,27 @@
             transition: all 0.3s ease;
             font-weight: 500;
         }
-
         .btn-primary {
             background: #4CAF50;
             color: white;
         }
-
         .btn-secondary {
             background: #FF9800;
             color: white;
         }
-
         .btn-danger {
             background: #f44336;
             color: white;
         }
-
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
-
         .timer-settings {
             display: flex;
             gap: clamp(15px, 4vw, 30px);
@@ -138,7 +122,6 @@
             align-items: center;
             flex-wrap: wrap;
         }
-
         .time-input {
             display: flex;
             flex-direction: column;
@@ -146,19 +129,16 @@
             gap: 15px;
             min-width: 120px;
         }
-
         .time-input label {
             font-size: clamp(0.9rem, 2.5vw, 1.1rem);
             opacity: 0.8;
             font-weight: 500;
         }
-
         .time-controls {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .time-btn {
             width: clamp(35px, 8vw, 45px);
             height: clamp(35px, 8vw, 45px);
@@ -174,12 +154,10 @@
             align-items: center;
             justify-content: center;
         }
-
         .time-btn:hover {
             background: rgba(255, 255, 255, 0.4);
             transform: scale(1.1);
         }
-
         .time-value {
             width: clamp(60px, 12vw, 80px);
             padding: clamp(8px, 2vw, 12px);
@@ -192,17 +170,14 @@
             color: white;
             backdrop-filter: blur(5px);
         }
-
         .time-value::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
-
         .laps {
             margin-top: 30px;
             max-height: clamp(150px, 30vh, 200px);
             overflow-y: auto;
         }
-
         .lap-item {
             background: rgba(255, 255, 255, 0.1);
             margin: 5px 0;
@@ -212,16 +187,13 @@
             justify-content: space-between;
             font-size: clamp(0.9rem, 2vw, 1rem);
         }
-
         .hidden {
             display: none;
         }
-
         .finished {
             animation: pulse 1s infinite;
             color: #FFD700;
         }
-
         .timer-finished-message {
             position: fixed;
             top: 50%;
@@ -238,35 +210,43 @@
             display: none;
             text-align: center;
         }
-
+        .timer-finished-message button {
+            margin-top: 20px;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 30px;
+            background: #f44336;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .timer-finished-message button:hover {
+            background: #c62828;
+        }
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
-
-        /* スマホ対応 */
         @media (max-width: 480px) {
             .container {
                 padding: 15px;
                 margin: 10px;
             }
-            
             .controls {
                 gap: 10px;
             }
-            
             .btn {
                 min-width: 80px;
                 flex: 1;
                 max-width: 120px;
             }
-            
             .timer-settings {
                 flex-direction: column;
                 gap: 15px;
             }
-            
             .time-input {
                 flex-direction: row;
                 gap: 10px;
@@ -276,18 +256,18 @@
     </style>
 </head>
 <body>
+    <!-- タイマー終了時の音 -->
+    <audio id="timer-finish-audio" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5e2.mp3" preload="auto"></audio>
     <div class="timer-finished-message" id="timer-finished-message">
-        ⏰ 時間になりました！ ⏰
+        ⏰ 時間になりました！ ⏰<br>
+        <button onclick="stopTimerFinished()">ストップ</button>
     </div>
-    
     <div class="container">
-        <h1>タイマー & ストップウォッチ</h1>
-        
+        <h1 style="white-space: nowrap;">タイマー & ストップウォッチ</h1>
         <div class="tabs">
             <button class="tab active" onclick="switchTab('timer')">タイマー</button>
             <button class="tab" onclick="switchTab('stopwatch')">ストップウォッチ</button>
         </div>
-
         <!-- タイマー -->
         <div id="timer-section">
             <div class="timer-settings">
@@ -308,31 +288,25 @@
                     </div>
                 </div>
             </div>
-            
             <div class="display" id="timer-display">05:00</div>
-            
             <div class="controls">
                 <button class="btn btn-primary" id="timer-start" onclick="startTimer()">開始</button>
                 <button class="btn btn-secondary" id="timer-pause" onclick="pauseTimer()" style="display: none;">一時停止</button>
                 <button class="btn btn-danger" onclick="resetTimer()">リセット</button>
             </div>
         </div>
-
         <!-- ストップウォッチ -->
         <div id="stopwatch-section" class="hidden">
             <div class="display" id="stopwatch-display">00:00:00</div>
-            
             <div class="controls">
                 <button class="btn btn-primary" id="stopwatch-start" onclick="startStopwatch()">開始</button>
                 <button class="btn btn-secondary" id="stopwatch-pause" onclick="pauseStopwatch()" style="display: none;">一時停止</button>
                 <button class="btn btn-secondary" id="stopwatch-lap" onclick="addLap()" style="display: none;">ラップ</button>
                 <button class="btn btn-danger" onclick="resetStopwatch()">リセット</button>
             </div>
-
             <div class="laps" id="laps-container"></div>
         </div>
     </div>
-
     <script>
         let currentTab = 'timer';
         let timerInterval = null;
@@ -340,33 +314,22 @@
         let timerTime = 300; // 5分
         let stopwatchTime = 0;
         let laps = [];
+        let timerFinished = false; // 追加
 
         function switchTab(tab) {
             currentTab = tab;
-            
-            // タブの見た目を更新
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
-            
-            // セクションの表示切り替え
             document.getElementById('timer-section').classList.toggle('hidden', tab !== 'timer');
             document.getElementById('stopwatch-section').classList.toggle('hidden', tab !== 'stopwatch');
-            
-            // 実行中のタイマーを停止
-            if (tab !== 'timer') {
-                pauseTimer();
-            }
-            if (tab !== 'stopwatch') {
-                pauseStopwatch();
-            }
+            if (tab !== 'timer') pauseTimer();
+            if (tab !== 'stopwatch') pauseStopwatch();
         }
-
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
             return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
-
         function formatStopwatchTime(centiseconds) {
             const totalSeconds = Math.floor(centiseconds / 100);
             const minutes = Math.floor(totalSeconds / 60);
@@ -374,13 +337,11 @@
             const cs = centiseconds % 100;
             return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${cs.toString().padStart(2, '0')}`;
         }
-
         // タイマー機能
         function updateTimerDisplay() {
             const display = document.getElementById('timer-display');
             display.textContent = formatTime(timerTime);
-            
-            if (timerTime === 0 && timerInterval !== null) {
+            if (timerTime === 0 && timerInterval !== null && !timerFinished) {
                 display.classList.add('finished');
                 showTimerFinished();
                 clearInterval(timerInterval);
@@ -389,55 +350,6 @@
                 document.getElementById('timer-pause').style.display = 'none';
             }
         }
-
-        function showTimerFinished() {
-            // 背景を変更
-            document.body.classList.add('timer-finished');
-            
-            // メッセージを表示
-            const message = document.getElementById('timer-finished-message');
-            message.style.display = 'block';
-            
-            // 3秒後に元に戻す
-            setTimeout(() => {
-                document.body.classList.remove('timer-finished');
-                message.style.display = 'none';
-            }, 3000);
-        }
-
-        function startTimer() {
-            const minutes = parseInt(document.getElementById('minutes').value) || 0;
-            const seconds = parseInt(document.getElementById('seconds').value) || 0;
-            
-            if (timerInterval === null) {
-                timerTime = minutes * 60 + seconds;
-            }
-            
-            if (timerTime > 0) {
-                timerInterval = setInterval(() => {
-                    timerTime--;
-                    updateTimerDisplay();
-                    
-                    if (timerTime === 0) {
-                        clearInterval(timerInterval);
-                        timerInterval = null;
-                    }
-                }, 1000);
-                
-                document.getElementById('timer-start').style.display = 'none';
-                document.getElementById('timer-pause').style.display = 'inline-block';
-            }
-        }
-
-        function pauseTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                document.getElementById('timer-start').style.display = 'inline-block';
-                document.getElementById('timer-pause').style.display = 'none';
-            }
-        }
-
         function resetTimer() {
             clearInterval(timerInterval);
             timerInterval = null;
@@ -448,24 +360,67 @@
             document.getElementById('timer-display').classList.remove('finished');
             document.getElementById('timer-start').style.display = 'inline-block';
             document.getElementById('timer-pause').style.display = 'none';
+            stopTimerFinished(); // 追加: リセット時にUIも消す
         }
-
+        function showTimerFinished() {
+            document.body.classList.add('timer-finished');
+            const message = document.getElementById('timer-finished-message');
+            message.style.display = 'block';
+            timerFinished = true;
+            // 音を鳴らす
+            const audio = document.getElementById('timer-finish-audio');
+            audio.currentTime = 0;
+            audio.play();
+        }
+        function stopTimerFinished() {
+            document.body.classList.remove('timer-finished');
+            document.getElementById('timer-finished-message').style.display = 'none';
+            timerFinished = false;
+            // 音を止める
+            const audio = document.getElementById('timer-finish-audio');
+            audio.pause();
+            audio.currentTime = 0;
+        }
+        function startTimer() {
+            const minutes = parseInt(document.getElementById('minutes').value) || 0;
+            const seconds = parseInt(document.getElementById('seconds').value) || 0;
+            if (timerInterval === null) {
+                timerTime = minutes * 60 + seconds;
+            }
+            if (timerTime > 0) {
+                timerInterval = setInterval(() => {
+                    timerTime--;
+                    updateTimerDisplay();
+                    if (timerTime === 0) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                    }
+                }, 1000);
+                document.getElementById('timer-start').style.display = 'none';
+                document.getElementById('timer-pause').style.display = 'inline-block';
+            }
+        }
+        function pauseTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                document.getElementById('timer-start').style.display = 'inline-block';
+                document.getElementById('timer-pause').style.display = 'none';
+            }
+        }
         // ストップウォッチ機能
         function updateStopwatchDisplay() {
             document.getElementById('stopwatch-display').textContent = formatStopwatchTime(stopwatchTime);
         }
-
         function startStopwatch() {
             stopwatchInterval = setInterval(() => {
                 stopwatchTime++;
                 updateStopwatchDisplay();
             }, 10);
-            
             document.getElementById('stopwatch-start').style.display = 'none';
             document.getElementById('stopwatch-pause').style.display = 'inline-block';
             document.getElementById('stopwatch-lap').style.display = 'inline-block';
         }
-
         function pauseStopwatch() {
             if (stopwatchInterval) {
                 clearInterval(stopwatchInterval);
@@ -475,7 +430,6 @@
                 document.getElementById('stopwatch-lap').style.display = 'none';
             }
         }
-
         function resetStopwatch() {
             clearInterval(stopwatchInterval);
             stopwatchInterval = null;
@@ -487,18 +441,15 @@
             document.getElementById('stopwatch-pause').style.display = 'none';
             document.getElementById('stopwatch-lap').style.display = 'none';
         }
-
         function addLap() {
             if (stopwatchInterval) {
                 laps.unshift(stopwatchTime);
                 updateLapsDisplay();
             }
         }
-
         function updateLapsDisplay() {
             const container = document.getElementById('laps-container');
             container.innerHTML = '';
-            
             laps.forEach((lapTime, index) => {
                 const lapItem = document.createElement('div');
                 lapItem.className = 'lap-item';
@@ -509,25 +460,20 @@
                 container.appendChild(lapItem);
             });
         }
-
         // 初期化
         updateTimerDisplay();
         updateStopwatchDisplay();
-
         // 時間調整機能
         function adjustTime(type, change) {
             if (timerInterval !== null) return; // タイマー実行中は変更不可
-            
             const input = document.getElementById(type);
             let currentValue = parseInt(input.value) || 0;
             let newValue = currentValue + change;
-            
             if (type === 'minutes') {
                 newValue = Math.max(0, Math.min(59, newValue));
             } else {
                 newValue = Math.max(0, Math.min(59, newValue));
             }
-            
             input.value = newValue;
             resetTimer();
         }

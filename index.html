@@ -74,7 +74,7 @@
 </head>
 <body>
     <!-- タイマー終了時の音（GitHub Pages上の音声ファイルに変更してください） -->
-    <audio id="timer-finish-audio" src="sounds/sei_ge_pinponpan_s_up01.mp3" preload="auto" loop></audio>
+    <audio id="timer-finish-audio" src="sounds/timer-finish.mp3" preload="auto"></audio>
     <div class="timer-finished-message" id="timer-finished-message">
         ⏰ 時間になりました！ ⏰<br>
         <button onclick="stopTimerFinished()">ストップ</button>
@@ -203,7 +203,7 @@
             // 音を鳴らす
             const audio = document.getElementById('timer-finish-audio');
             audio.currentTime = 0;
-            audio.play();
+            audio.play().catch(function(err){console.error("Failed to play timer finish audio:", err);});
         }
         function stopTimerFinished() {
             document.body.classList.remove('timer-finished');
@@ -215,15 +215,20 @@
             audio.currentTime = 0;
         }
         function startTimer() {
-            // ユーザー操作で一度再生許可を得る
-    const audio = document.getElementById('timer-finish-audio');
-    if (audio && !audio._unlocked) {
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-            audio._unlocked = true;
-        }).catch(() => {});
-    }
+            // ユーザー操作で一度再生許可を得る（GitHub Pages対応）
+            const audio = document.getElementById('timer-finish-audio');
+            if (audio && !audio._unlocked) {
+                // タイマー開始ボタン押下で一度だけ再生許可を与える
+                audio.muted = true;
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.muted = false;
+                    audio._unlocked = true;
+                }).catch(function(err){
+                    console.error("Failed to unlock timer finish audio:", err);
+                });
+            }
             let minutes = parseInt(document.getElementById('minutes').value, 10);
             let seconds = parseInt(document.getElementById('seconds').value, 10);
             if (isNaN(minutes) || minutes < 0) minutes = 0;

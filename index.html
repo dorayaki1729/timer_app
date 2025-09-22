@@ -3,261 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>タイマー&ストップウォッチ</title>
+    <title>タイマー&ストップウォッチ | シンプルで使いやすい無料Webアプリ</title>
+    <meta name="description" content="シンプルで使いやすい無料のタイマー＆ストップウォッチWebアプリ。勉強や仕事、運動など様々なシーンで活用できます。スマホ・PC対応。">
+    <meta name="keywords" content="タイマー, ストップウォッチ, 無料, Webアプリ, 勉強, 仕事, 時間管理, シンプル, スマホ対応">
+    <meta name="author" content="dorayaki">
+    <link rel="canonical" href="https://dorayaki.github.io/timer_app/">
+
+    <!-- OGP (Open Graph Protocol) -->
+    <meta property="og:title" content="タイマー&ストップウォッチ | シンプルで使いやすい無料Webアプリ">
+    <meta property="og:description" content="シンプルで使いやすい無料のタイマー＆ストップウォッチWebアプリ。勉強や仕事、運動など様々なシーンで活用できます。スマホ・PC対応。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dorayaki.github.io/timer_app/">
+    <meta property="og:image" content="https://dorayaki.github.io/timer_app/ogp.png">
+    <meta property="og:site_name" content="タイマー&ストップウォッチ">
+
+    <!-- Twitterカード -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="タイマー&ストップウォッチ | シンプルで使いやすい無料Webアプリ">
+    <meta name="twitter:description" content="シンプルで使いやすい無料のタイマー＆ストップウォッチWebアプリ。勉強や仕事、運動など様々なシーンで活用できます。スマホ・PC対応。">
+    <meta name="twitter:image" content="https://dorayaki.github.io/timer_app/ogp.png">
+
+    <!-- ファビコン -->
+    <link rel="icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
     <style>
-        /* --- 既存のスタイルそのまま --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            transition: background 0.5s ease;
-            padding: 10px;
-        }
-        body.timer-finished {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            animation: pulse-bg 2s infinite;
-        }
-        @keyframes pulse-bg {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            max-width: 450px;
-            width: 95%;
-            margin: 0 auto;
-        }
-        h1 {
-            font-size: clamp(1.5rem, 4vw, 2rem);
-            margin-bottom: 20px;
-            font-weight: 300;
-        }
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 5px;
-            gap: 5px;
-        }
-        .tab {
-            flex: 1;
-            padding: clamp(8px, 2vw, 12px);
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
-            white-space: nowrap;
-        }
-        .tab.active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-        .display {
-            font-size: clamp(2.5rem, 8vw, 4rem);
-            font-weight: 300;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
-        }
-        .controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-        .btn {
-            padding: clamp(10px, 2vw, 15px) clamp(15px, 3vw, 25px);
-            border: none;
-            border-radius: 50px;
-            font-size: clamp(0.9rem, 2.5vw, 1rem);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        .btn-primary {
-            background: #4CAF50;
-            color: white;
-        }
-        .btn-secondary {
-            background: #FF9800;
-            color: white;
-        }
-        .btn-danger {
-            background: #f44336;
-            color: white;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .timer-settings {
-            display: flex;
-            gap: clamp(15px, 4vw, 30px);
-            justify-content: center;
-            margin: 20px 0;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .time-input {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            min-width: 120px;
-        }
-        .time-input label {
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-            opacity: 0.8;
-            font-weight: 500;
-        }
-        .time-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .time-btn {
-            width: clamp(35px, 8vw, 45px);
-            height: clamp(35px, 8vw, 45px);
-            border: none;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .time-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(1.1);
-        }
-        .time-value {
-            width: clamp(60px, 12vw, 80px);
-            padding: clamp(8px, 2vw, 12px);
-            border: none;
-            border-radius: 12px;
-            text-align: center;
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-            font-weight: bold;
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-            backdrop-filter: blur(5px);
-        }
-        .time-value::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        .laps {
-            margin-top: 30px;
-            max-height: clamp(150px, 30vh, 200px);
-            overflow-y: auto;
-        }
-        .lap-item {
-            background: rgba(255, 255, 255, 0.1);
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            font-size: clamp(0.9rem, 2vw, 1rem);
-        }
-        .hidden {
-            display: none;
-        }
-        .finished {
-            animation: pulse 1s infinite;
-            color: #FFD700;
-        }
-        .timer-finished-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.95);
-            color: #ff6b6b;
-            padding: 30px;
-            border-radius: 20px;
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
-            font-weight: bold;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            display: none;
-            text-align: center;
-        }
-        .timer-finished-message button {
-            margin-top: 20px;
-            padding: 10px 30px;
-            border: none;
-            border-radius: 30px;
-            background: #f44336;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .timer-finished-message button:hover {
-            background: #c62828;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: white; transition: background 0.5s ease; padding: 10px; }
+        body.timer-finished { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); animation: pulse-bg 2s infinite; }
+        @keyframes pulse-bg { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .container { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); max-width: 450px; width: 95%; margin: 0 auto; }
+        h1 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 20px; font-weight: 300; }
+        .tabs { display: flex; margin-bottom: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 5px; gap: 5px; }
+        .tab { flex: 1; padding: clamp(8px, 2vw, 12px); background: none; border: none; color: white; cursor: pointer; border-radius: 8px; transition: all 0.3s ease; font-size: clamp(0.9rem, 2.5vw, 1rem); white-space: nowrap; }
+        .tab.active { background: rgba(255, 255, 255, 0.2); transform: scale(1.05); }
+        .display { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 300; margin: 20px 0; font-family: 'Courier New', monospace; letter-spacing: 2px; }
+        .controls { display: flex; gap: 15px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+        .btn { padding: clamp(10px, 2vw, 15px) clamp(15px, 3vw, 25px); border: none; border-radius: 50px; font-size: clamp(0.9rem, 2.5vw, 1rem); cursor: pointer; transition: all 0.3s ease; font-weight: 500; }
+        .btn-primary { background: #4CAF50; color: white; }
+        .btn-secondary { background: #FF9800; color: white; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .timer-settings { display: flex; gap: clamp(15px, 4vw, 30px); justify-content: center; margin: 20px 0; align-items: center; flex-wrap: wrap; }
+        .time-input { display: flex; flex-direction: column; align-items: center; gap: 15px; min-width: 120px; }
+        .time-input label { font-size: clamp(0.9rem, 2.5vw, 1.1rem); opacity: 0.8; font-weight: 500; }
+        .time-controls { display: flex; align-items: center; gap: 10px; }
+        .time-btn { width: clamp(35px, 8vw, 45px); height: clamp(35px, 8vw, 45px); border: none; border-radius: 50%; background: rgba(255, 255, 255, 0.3); color: white; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
+        .time-btn:hover { background: rgba(255, 255, 255, 0.4); transform: scale(1.1); }
+        .time-value { width: clamp(60px, 12vw, 80px); padding: clamp(8px, 2vw, 12px); border: none; border-radius: 12px; text-align: center; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: bold; background: rgba(255, 255, 255, 0.3); color: white; backdrop-filter: blur(5px); }
+        .time-value::placeholder { color: rgba(255, 255, 255, 0.6); }
+        .laps { margin-top: 30px; max-height: clamp(150px, 30vh, 200px); overflow-y: auto; }
+        .lap-item { background: rgba(255, 255, 255, 0.1); margin: 5px 0; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; font-size: clamp(0.9rem, 2vw, 1rem); }
+        .hidden { display: none; }
+        .finished { animation: pulse 1s infinite; color: #FFD700; }
+        .timer-finished-message { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.95); color: #ff6b6b; padding: 30px; border-radius: 20px; font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: bold; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); z-index: 1000; display: none; text-align: center; }
+        .timer-finished-message button { margin-top: 20px; padding: 10px 30px; border: none; border-radius: 30px; background: #f44336; color: white; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .timer-finished-message button:hover { background: #c62828; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-                margin: 10px;
-            }
-            .controls {
-                gap: 10px;
-            }
-            .btn {
-                min-width: 80px;
-                flex: 1;
-                max-width: 120px;
-            }
-            .timer-settings {
-                flex-direction: column;
-                gap: 15px;
-            }
-            .time-input {
-                flex-direction: row;
-                gap: 10px;
-                align-items: center;
-            }
+            .container { padding: 15px; margin: 10px; }
+            .controls { gap: 10px; }
+            .btn { min-width: 80px; flex: 1; max-width: 120px; }
+            .timer-settings { flex-direction: column; gap: 15px; }
+            .time-input { flex-direction: row; gap: 10px; align-items: center; }
         }
+        /* 広告枠 */
+        .ad-container { margin: 20px 0; min-height: 90px; }
     </style>
 </head>
 <body>
-    <!-- タイマー終了時の音 -->
-    <audio id="timer-finish-audio" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5e2.mp3" preload="auto"></audio>
+    <!-- タイマー終了時の音（GitHub Pages上の音声ファイルに変更してください） -->
+    <audio id="timer-finish-audio" src="sounds/sei_ge_pinponpan_s_up01.mp3" preload="auto" loop></audio>
     <div class="timer-finished-message" id="timer-finished-message">
         ⏰ 時間になりました！ ⏰<br>
         <button onclick="stopTimerFinished()">ストップ</button>
@@ -265,8 +82,12 @@
     <div class="container">
         <h1 style="white-space: nowrap;">タイマー & ストップウォッチ</h1>
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('timer')">タイマー</button>
-            <button class="tab" onclick="switchTab('stopwatch')">ストップウォッチ</button>
+            <button class="tab active" onclick="switchTab('timer', event)">タイマー</button>
+            <button class="tab" onclick="switchTab('stopwatch', event)">ストップウォッチ</button>
+        </div>
+        <!-- 広告枠（必要ならAdSenseコードをここに貼る） -->
+        <div class="ad-container" id="ad-top">
+            <!-- ここに広告コードを挿入 -->
         </div>
         <!-- タイマー -->
         <div id="timer-section">
@@ -275,7 +96,8 @@
                     <label>分</label>
                     <div class="time-controls">
                         <button class="time-btn" onclick="adjustTime('minutes', -1)">−</button>
-                        <input type="number" class="time-value" id="minutes" value="5" min="0" max="59" readonly>
+                        <input type="number" class="time-value" id="minutes" value="5" min="0" max="59"
+                            oninput="onTimeInput('minutes')" onchange="onTimeInput('minutes')">
                         <button class="time-btn" onclick="adjustTime('minutes', 1)">＋</button>
                     </div>
                 </div>
@@ -283,7 +105,8 @@
                     <label>秒</label>
                     <div class="time-controls">
                         <button class="time-btn" onclick="adjustTime('seconds', -1)">−</button>
-                        <input type="number" class="time-value" id="seconds" value="0" min="0" max="59" readonly>
+                        <input type="number" class="time-value" id="seconds" value="0" min="0" max="59"
+                            oninput="onTimeInput('seconds')" onchange="onTimeInput('seconds')">
                         <button class="time-btn" onclick="adjustTime('seconds', 1)">＋</button>
                     </div>
                 </div>
@@ -306,6 +129,10 @@
             </div>
             <div class="laps" id="laps-container"></div>
         </div>
+        <!-- 広告枠（必要ならAdSenseコードをここに貼る） -->
+        <div class="ad-container" id="ad-bottom">
+            <!-- ここに広告コードを挿入 -->
+        </div>
     </div>
     <script>
         let currentTab = 'timer';
@@ -314,12 +141,12 @@
         let timerTime = 300; // 5分
         let stopwatchTime = 0;
         let laps = [];
-        let timerFinished = false; // 追加
+        let timerFinished = false;
 
-        function switchTab(tab) {
+        function switchTab(tab, event) {
             currentTab = tab;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) event.target.classList.add('active');
             document.getElementById('timer-section').classList.toggle('hidden', tab !== 'timer');
             document.getElementById('stopwatch-section').classList.toggle('hidden', tab !== 'stopwatch');
             if (tab !== 'timer') pauseTimer();
@@ -353,14 +180,20 @@
         function resetTimer() {
             clearInterval(timerInterval);
             timerInterval = null;
-            const minutes = parseInt(document.getElementById('minutes').value) || 0;
-            const seconds = parseInt(document.getElementById('seconds').value) || 0;
+            let minutes = parseInt(document.getElementById('minutes').value, 10);
+            let seconds = parseInt(document.getElementById('seconds').value, 10);
+            if (isNaN(minutes) || minutes < 0) minutes = 0;
+            if (isNaN(seconds) || seconds < 0) seconds = 0;
+            minutes = Math.min(59, Math.max(0, minutes));
+            seconds = Math.min(59, Math.max(0, seconds));
+            document.getElementById('minutes').value = minutes;
+            document.getElementById('seconds').value = seconds;
             timerTime = minutes * 60 + seconds;
             updateTimerDisplay();
             document.getElementById('timer-display').classList.remove('finished');
             document.getElementById('timer-start').style.display = 'inline-block';
             document.getElementById('timer-pause').style.display = 'none';
-            stopTimerFinished(); // 追加: リセット時にUIも消す
+            stopTimerFinished();
         }
         function showTimerFinished() {
             document.body.classList.add('timer-finished');
@@ -382,8 +215,23 @@
             audio.currentTime = 0;
         }
         function startTimer() {
-            const minutes = parseInt(document.getElementById('minutes').value) || 0;
-            const seconds = parseInt(document.getElementById('seconds').value) || 0;
+            // ユーザー操作で一度再生許可を得る
+    const audio = document.getElementById('timer-finish-audio');
+    if (audio && !audio._unlocked) {
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audio._unlocked = true;
+        }).catch(() => {});
+    }
+            let minutes = parseInt(document.getElementById('minutes').value, 10);
+            let seconds = parseInt(document.getElementById('seconds').value, 10);
+            if (isNaN(minutes) || minutes < 0) minutes = 0;
+            if (isNaN(seconds) || seconds < 0) seconds = 0;
+            minutes = Math.min(59, Math.max(0, minutes));
+            seconds = Math.min(59, Math.max(0, seconds));
+            document.getElementById('minutes').value = minutes;
+            document.getElementById('seconds').value = seconds;
             if (timerInterval === null) {
                 timerTime = minutes * 60 + seconds;
             }
@@ -413,6 +261,7 @@
             document.getElementById('stopwatch-display').textContent = formatStopwatchTime(stopwatchTime);
         }
         function startStopwatch() {
+            if (stopwatchInterval) return;
             stopwatchInterval = setInterval(() => {
                 stopwatchTime++;
                 updateStopwatchDisplay();
@@ -460,23 +309,33 @@
                 container.appendChild(lapItem);
             });
         }
-        // 初期化
-        updateTimerDisplay();
-        updateStopwatchDisplay();
+        // 入力欄の直接入力対応
+        function onTimeInput(type) {
+            if (timerInterval !== null) {
+                // タイマー実行中は入力不可
+                document.getElementById(type).value = Math.max(0, Math.min(59, parseInt(document.getElementById(type).value) || 0));
+                return;
+            }
+            let val = parseInt(document.getElementById(type).value, 10);
+            if (isNaN(val) || val < 0) val = 0;
+            if (val > 59) val = 59;
+            document.getElementById(type).value = val;
+            resetTimer();
+        }
         // 時間調整機能
         function adjustTime(type, change) {
             if (timerInterval !== null) return; // タイマー実行中は変更不可
             const input = document.getElementById(type);
-            let currentValue = parseInt(input.value) || 0;
+            let currentValue = parseInt(input.value, 10);
+            if (isNaN(currentValue)) currentValue = 0;
             let newValue = currentValue + change;
-            if (type === 'minutes') {
-                newValue = Math.max(0, Math.min(59, newValue));
-            } else {
-                newValue = Math.max(0, Math.min(59, newValue));
-            }
+            newValue = Math.max(0, Math.min(59, newValue));
             input.value = newValue;
             resetTimer();
         }
+        // 初期化
+        updateTimerDisplay();
+        updateStopwatchDisplay();
     </script>
 </body>
 </html>

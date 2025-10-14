@@ -4,8 +4,8 @@
     <meta name="google-site-verification" content="P5D_7lspSM1AjK5oHoyUBNBYu0Z1gdVkER80RIC1tW8" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>タイマー&ストップウォッチ | シンプルで使いやすい無料Webアプリ</title>
-    <meta name="description" content="シンプルで使いやすい無料のタイマー＆ストップウォッチWebアプリ。勉強や仕事、運動など様々なシーンで活用できます。スマホ・PC対応。">
+    <title>【無料】ストップウォッチ＆タイマーアプリ｜シンプルで使いやすいWebツール</title>
+    <meta name="description" content="無料で使えるシンプルなストップウォッチ＆タイマーアプリ。ブラウザで即使えるから、勉強・仕事・筋トレ・料理の時間管理に最適。スマホ・PC対応。">
     <meta name="keywords" content="タイマー, ストップウォッチ, 無料, Webアプリ, 勉強, 仕事, 時間管理, シンプル, スマホ対応">
     <meta name="author" content="dorayaki">
     <link rel="canonical" href="https://dorayaki.github.io/timer_app/">
@@ -72,6 +72,30 @@
         /* 広告枠 */
         .ad-container { margin: 20px 0; min-height: 90px; }
     </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "このストップウォッチは無料で使えますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "はい、完全に無料で使えます。インストールや登録は不要で、ブラウザ上ですぐ動作します。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "スマホでも使えますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "はい、スマートフォンでもPCでも利用できます。デザインは自動で画面サイズに最適化されます。"
+          }
+        }
+      ]
+    }
+    </script>
 </head>
 <body>
     <!-- タイマー終了時の音（GitHub Pages上の音声ファイルに変更してください） -->
@@ -81,7 +105,7 @@
         <button onclick="stopTimerFinished()">ストップ</button>
     </div>
     <div class="container">
-        <h1 style="white-space: nowrap;">タイマー & ストップウォッチ</h1>
+        <h1>無料で使えるストップウォッチ＆タイマーWebアプリ</h1>
         <div class="tabs">
             <button class="tab active" onclick="switchTab('timer', event)">タイマー</button>
             <button class="tab" onclick="switchTab('stopwatch', event)">ストップウォッチ</button>
@@ -344,4 +368,8 @@
         updateStopwatchDisplay();
     </script>
 </body>
+<footer style="margin-top:30px; text-align:center; font-size:0.9rem; opacity:0.8;">
+  <p>開発者：dorayaki｜最終更新日：2025年10月14日</p>
+  <p>このアプリはWebブラウザで動作する無料のタイマー＆ストップウォッチです。</p>
+</footer>
 </html>

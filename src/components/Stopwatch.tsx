@@ -128,4 +128,4 @@ const Stopwatch: React.FC<StopwatchProps> = ({ isActive }) => {
   );
 };
 
-export default Stopwatch;
+export default React.memo(Stopwatch);

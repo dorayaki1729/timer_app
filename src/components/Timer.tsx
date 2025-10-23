@@ -1,17 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, RotateCcw, Plus, Minus } from 'lucide-react';
 
+// Constants
+const INITIAL_MINUTES = 5;
+const INITIAL_SECONDS = 0;
+const MAX_MINUTES = 59;
+const MAX_SECONDS = 59;
+const INTERVAL_MS = 1000;
+
+// Types
 interface TimerProps {
   isActive: boolean;
 }
 
-const Timer: React.FC<TimerProps> = ({ isActive }) => {
-  const [minutes, setMinutes] = useState(5);
-  const [seconds, setSeconds] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
-  const [isRunning, setIsRunning] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+// Custom Hook
+const useTimer = () => {
+  const [minutes, setMinutes] = useState<number>(INITIAL_MINUTES);
+  const [seconds, setSeconds] = useState<number>(INITIAL_SECONDS);
+  const [timeLeft, setTimeLeft] = useState<number>(INITIAL_MINUTES * 60 + INITIAL_SECONDS);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [isFinished, setIsFinished] = useState<boolean>(false);
+  const intervalRef = useRef<number | null>(null);
+
+  const resetTimer = useCallback(() => {
+    setIsRunning(false);
+    setIsFinished(false);
+    setTimeLeft(minutes * 60 + seconds);
+  }, [minutes, seconds]);
 
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
@@ -24,11 +39,7 @@ const Timer: React.FC<TimerProps> = ({ isActive }) => {
           }
           return prev - 1;
         });
-      }, 1000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      }, INTERVAL_MS);
     }
 
     return () => {
@@ -38,148 +49,176 @@ const Timer: React.FC<TimerProps> = ({ isActive }) => {
     };
   }, [isRunning, timeLeft]);
 
+  const handleStart = useCallback(() => {
+    if (timeLeft > 0) {
+      setIsRunning(true);
+      setIsFinished(false);
+    }
+  }, [timeLeft]);
+
+  const handlePause = useCallback(() => {
+    setIsRunning(false);
+  }, []);
+
+  const handleSetTime = useCallback(() => {
+    if (!isRunning) {
+      setTimeLeft(minutes * 60 + seconds);
+      setIsFinished(false);
+    }
+  }, [isRunning, minutes, seconds]);
+
+  const adjustTime = useCallback((type: 'minutes' | 'seconds', increment: boolean) => {
+    if (isRunning) return;
+    
+    if (type === 'minutes') {
+      setMinutes(prev => 
+        increment ? Math.min(prev + 1, MAX_MINUTES) : Math.max(prev - 1, 0)
+      );
+    } else {
+      setSeconds(prev => 
+        increment ? Math.min(prev + 1, MAX_SECONDS) : Math.max(prev - 1, 0)
+      );
+    }
+  }, [isRunning]);
+
+  return {
+    minutes,
+    seconds,
+    timeLeft,
+    isRunning,
+    setIsRunning,
+    isFinished,
+    resetTimer,
+    handleStart,
+    handlePause,
+    handleSetTime,
+    adjustTime
+  };
+};
+
+// Utility Functions
+const formatTime = (totalSeconds: number): string => {
+  const mins = Math.floor(totalSeconds / 60);
+  const secs = totalSeconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
+
+const Timer: React.FC<TimerProps> = React.memo(({ isActive }) => {
+  const {
+    minutes,
+    seconds,
+    timeLeft,
+    isRunning,
+    setIsRunning,
+    isFinished,
+    handleStart,
+    handlePause,
+    handleSetTime,
+    adjustTime
+  } = useTimer();
+
   useEffect(() => {
     if (!isActive) {
       setIsRunning(false);
     }
   }, [isActive]);
 
-  const handleStart = () => {
-    if (timeLeft > 0) {
-      setIsRunning(true);
-      setIsFinished(false);
-    }
-  };
+  // Memoized Components
+  const TimeDisplay = React.memo(() => (
+    <div className={`text-8xl font-bold text-center mb-8 transition-all duration-300 ${
+      isFinished ? 'text-red-500 animate-pulse' : 'text-white'
+    }`}>
+      {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:
+      {String(timeLeft % 60).padStart(2, '0')}
+    </div>
+  ));
 
-  const handlePause = () => {
-    setIsRunning(false);
-  };
-
-  const handleReset = () => {
-    setIsRunning(false);
-    setIsFinished(false);
-    setTimeLeft(minutes * 60 + seconds);
-  };
-
-  const handleSetTime = () => {
-    if (!isRunning) {
-      setTimeLeft(minutes * 60 + seconds);
-      setIsFinished(false);
-    }
-  };
-
-  const adjustMinutes = (increment: boolean) => {
-    if (!isRunning) {
-      const newMinutes = increment 
-        ? Math.min(minutes + 1, 59)
-        : Math.max(minutes - 1, 0);
-      setMinutes(newMinutes);
-    }
-  };
-
-  const adjustSeconds = (increment: boolean) => {
-    if (!isRunning) {
-      const newSeconds = increment 
-        ? Math.min(seconds + 1, 59)
-        : Math.max(seconds - 1, 0);
-      setSeconds(newSeconds);
-    }
-  };
-
-  const formatTime = (totalSeconds: number) => {
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  return (
-    <div className="w-full max-w-md mx-auto">
-      {/* Time Display */}
-      <div className={`text-8xl font-bold text-center mb-8 transition-all duration-300 ${
-        isFinished ? 'text-red-500 animate-pulse' : 'text-white'
-      }`}>
-        {formatTime(timeLeft)}
-      </div>
-
-      {/* Time Setting Controls */}
-      {!isRunning && (
-        <div className="mb-8 space-y-4">
-          <div className="flex items-center justify-center space-x-6">
-            <div className="text-center">
-              <div className="text-white text-sm mb-2">Minutes</div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => adjustMinutes(false)}
-                  className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
-                >
-                  <Minus size={16} className="text-white" />
-                </button>
-                <div className="w-12 text-center text-white text-xl font-semibold">
-                  {minutes.toString().padStart(2, '0')}
-                </div>
-                <button
-                  onClick={() => adjustMinutes(true)}
-                  className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
-                >
-                  <Plus size={16} className="text-white" />
-                </button>
+  const TimeControls = React.memo(() => (
+    !isRunning && (
+      <div className="mb-8 space-y-4">
+        <div className="flex items-center justify-center space-x-6">
+          <div className="text-center">
+            <div className="text-white text-sm mb-2">Minutes</div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => adjustTime('minutes', false)}
+                className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+              >
+                <Minus size={16} className="text-white" />
+              </button>
+              <div className="w-12 text-center text-white text-xl font-semibold">
+                {String(minutes).padStart(2, '0')}
               </div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-white text-sm mb-2">Seconds</div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => adjustSeconds(false)}
-                  className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
-                >
-                  <Minus size={16} className="text-white" />
-                </button>
-                <div className="w-12 text-center text-white text-xl font-semibold">
-                  {seconds.toString().padStart(2, '0')}
-                </div>
-                <button
-                  onClick={() => adjustSeconds(true)}
-                  className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
-                >
-                  <Plus size={16} className="text-white" />
-                </button>
-              </div>
+              <button
+                onClick={() => adjustTime('minutes', true)}
+                className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+              >
+                <Plus size={16} className="text-white" />
+              </button>
             </div>
           </div>
 
-          <button
-            onClick={handleSetTime}
-            className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-full text-white font-semibold transition-colors"
-          >
-            Set Timer
-          </button>
+          <div className="text-center">
+            <div className="text-white text-sm mb-2">Seconds</div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => adjustTime('seconds', false)}
+                className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+              >
+                <Minus size={16} className="text-white" />
+              </button>
+              <div className="w-12 text-center text-white text-xl font-semibold">
+                {String(seconds).padStart(2, '0')}
+              </div>
+              <button
+                onClick={() => adjustTime('seconds', true)}
+                className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+              >
+                <Plus size={16} className="text-white" />
+              </button>
+            </div>
+          </div>
         </div>
-      )}
-
-      {/* Control Buttons */}
-      <div className="flex justify-center space-x-4">
-        <button
-          onClick={isRunning ? handlePause : handleStart}
-          disabled={timeLeft === 0 && !isRunning}
-          className="w-16 h-16 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-        >
-          {isRunning ? (
-            <Pause size={24} className="text-gray-800" />
-          ) : (
-            <Play size={24} className="text-gray-800 ml-1" />
-          )}
-        </button>
 
         <button
-          onClick={handleReset}
-          className="w-16 h-16 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-200 transform hover:scale-105 border-2 border-white"
+          onClick={handleSetTime}
+          className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-full text-white font-semibold transition-colors"
         >
-          <RotateCcw size={24} className="text-white" />
+          Set Timer
         </button>
       </div>
+    )
+  ));
 
-      {/* Finished Message */}
+  const ControlButtons = React.memo(() => (
+    <div className="flex justify-center space-x-4">
+      <button
+        onClick={isRunning ? handlePause : handleStart}
+        disabled={timeLeft === 0 && !isRunning}
+        className="w-16 h-16 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+      >
+        {isRunning ? (
+          <Pause size={24} className="text-gray-800" />
+        ) : (
+          <Play size={24} className="text-gray-800 ml-1" />
+        )}
+      </button>
+
+      <button
+        onClick={resetTimer}
+        className="w-16 h-16 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-200 transform hover:scale-105 border-2 border-white"
+      >
+        <RotateCcw size={24} className="text-white" />
+      </button>
+    </div>
+  ));
+
+  return (
+    <div className="w-full max-w-md mx-auto">
+      <TimeDisplay />
+      <TimeControls />
+      <ControlButtons />
+
       {isFinished && (
         <div className="mt-6 text-center">
           <div className="text-2xl font-bold text-yellow-300 animate-bounce">
@@ -189,6 +228,6 @@ const Timer: React.FC<TimerProps> = ({ isActive }) => {
       )}
     </div>
   );
-};
+});
 
-export default React.memo(Timer);
+export default Timer;

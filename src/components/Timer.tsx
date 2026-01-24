@@ -20,7 +20,8 @@ const useTimer = () => {
   const [timeLeft, setTimeLeft] = useState<number>(INITIAL_MINUTES * 60 + INITIAL_SECONDS);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isFinished, setIsFinished] = useState<boolean>(false);
-  const intervalRef = useRef<number | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const holdIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const resetTimer = useCallback(() => {
     setIsRunning(false);
@@ -81,6 +82,33 @@ const useTimer = () => {
     }
   }, [isRunning]);
 
+  const setMinutesDirect = useCallback((value: number) => {
+    if (isRunning) return;
+    setMinutes(Math.min(Math.max(value, 0), MAX_MINUTES));
+  }, [isRunning]);
+
+  const setSecondsDirect = useCallback((value: number) => {
+    if (isRunning) return;
+    setSeconds(Math.min(Math.max(value, 0), MAX_SECONDS));
+  }, [isRunning]);
+
+  const startHoldAdjust = useCallback((type: 'minutes' | 'seconds', increment: boolean) => {
+    if (isRunning) return;
+
+    adjustTime(type, increment);
+
+    holdIntervalRef.current = setInterval(() => {
+      adjustTime(type, increment);
+    }, 150);
+  }, [adjustTime, isRunning]);
+
+  const stopHoldAdjust = useCallback(() => {
+    if (holdIntervalRef.current) {
+      clearInterval(holdIntervalRef.current);
+      holdIntervalRef.current = null;
+    }
+  }, []);
+
   return {
     minutes,
     seconds,
@@ -92,15 +120,9 @@ const useTimer = () => {
     handleStart,
     handlePause,
     handleSetTime,
-    adjustTime
+    startHoldAdjust,
+    stopHoldAdjust
   };
-};
-
-// Utility Functions
-const formatTime = (totalSeconds: number): string => {
-  const mins = Math.floor(totalSeconds / 60);
-  const secs = totalSeconds % 60;
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
 const Timer: React.FC<TimerProps> = React.memo(({ isActive }) => {
@@ -111,10 +133,12 @@ const Timer: React.FC<TimerProps> = React.memo(({ isActive }) => {
     isRunning,
     setIsRunning,
     isFinished,
+    resetTimer,
     handleStart,
     handlePause,
     handleSetTime,
-    adjustTime
+    startHoldAdjust,
+    stopHoldAdjust
   } = useTimer();
 
   useEffect(() => {
@@ -134,23 +158,32 @@ const Timer: React.FC<TimerProps> = React.memo(({ isActive }) => {
   ));
 
   const TimeControls = React.memo(() => (
-    !isRunning && (
-      <div className="mb-8 space-y-4">
-        <div className="flex items-center justify-center space-x-6">
+      <div className="mb-8 space-y-6">
+        <div className="space-y-6">
+
           <div className="text-center">
             <div className="text-white text-sm mb-2">Minutes</div>
-            <div className="flex items-center space-x-2">
+
+            <div className="flex items-center justify-center space-x-4 mb-2">
               <button
-                onClick={() => adjustTime('minutes', false)}
+                onPointerDown={() => startHoldAdjust('minutes', false)}
+                onPointerUp={stopHoldAdjust}
+                onPointerLeave={stopHoldAdjust}
+                onPointerCancel={stopHoldAdjust}
                 className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
               >
                 <Minus size={16} className="text-white" />
               </button>
+
               <div className="w-12 text-center text-white text-xl font-semibold">
                 {String(minutes).padStart(2, '0')}
               </div>
+
               <button
-                onClick={() => adjustTime('minutes', true)}
+                onPointerDown={() => startHoldAdjust('minutes', true)}
+                onPointerUp={stopHoldAdjust}
+                onPointerLeave={stopHoldAdjust}
+                onPointerCancel={stopHoldAdjust}
                 className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
               >
                 <Plus size={16} className="text-white" />
@@ -160,24 +193,34 @@ const Timer: React.FC<TimerProps> = React.memo(({ isActive }) => {
 
           <div className="text-center">
             <div className="text-white text-sm mb-2">Seconds</div>
-            <div className="flex items-center space-x-2">
+
+            <div className="flex items-center justify-center space-x-4 mb-2">
               <button
-                onClick={() => adjustTime('seconds', false)}
+                onPointerDown={() => startHoldAdjust('seconds', false)}
+                onPointerUp={stopHoldAdjust}
+                onPointerLeave={stopHoldAdjust}
+                onPointerCancel={stopHoldAdjust}
                 className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
               >
                 <Minus size={16} className="text-white" />
               </button>
+
               <div className="w-12 text-center text-white text-xl font-semibold">
                 {String(seconds).padStart(2, '0')}
               </div>
+
               <button
-                onClick={() => adjustTime('seconds', true)}
+                onPointerDown={() => startHoldAdjust('seconds', true)}
+                onPointerUp={stopHoldAdjust}
+                onPointerLeave={stopHoldAdjust}
+                onPointerCancel={stopHoldAdjust}
                 className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
               >
                 <Plus size={16} className="text-white" />
               </button>
             </div>
           </div>
+
         </div>
 
         <button
@@ -187,7 +230,6 @@ const Timer: React.FC<TimerProps> = React.memo(({ isActive }) => {
           Set Timer
         </button>
       </div>
-    )
   ));
 
   const ControlButtons = React.memo(() => (
